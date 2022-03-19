@@ -1,0 +1,129 @@
+#include <iostream>
+#include <Windows.h>
+#include <stdlib.h>
+using namespace std; 
+
+void generateMatrix();
+// by Mike B
+/*
+ERROR CODES
+1a - in the first phase, generating matrix, user failed to enter 1 or 2 (choosing between making their own matrix or creating a random one)
+      within 10 attempts. This can be in less attempts if user enters spaces between chars in the string. For example "sdw sdf" counts as two
+      for loop iterations i=1 'sdw' and i=2 'sdf'. Also the user cannot type the number out with letters (Example "two" or "Two"). Thus,
+      any input that is not '1' or '2' will not work. 
+
+1b - in the second phase, choosing number of columns and rows, user failed to enter a valid integer that is greater than zero. The user cannot
+      type out the number with chars (Example "two" or "Two"). The number must be greater than zero because there cannot sike u thought
+
+*/
+
+int main(){
+    cout << "Matrix Manipulation";
+    generateMatrix();
+}
+
+void notifyError(string code){
+    cout << "\n \n"
+        << " >>>> Error!" 
+        << "\n >>>> Code: " << code
+        << "\n >>>> Exiting program.";
+    exit(0);
+}
+
+bool isNumber(const string& str)
+{
+    for (char const &c : str) {
+        if (std::isdigit(c) == 0) return false;
+    }
+    return true;
+}
+
+void generateMatrix(){      // Matrix generation function
+    bool flag;              // flag variable is true when user doesn't input 1 or 2 for userResponse, which notifies them of invalid input
+    int flow;               // determined by user response 1 or 2, after the first for lopp
+    string userResponse;    // the input variable that will determine if matrix is custom or random
+    for (int i = 0; i<=12; i++){        // for loop giving user multiple attempts to simply enter a 1 or 2 for userResponse variable 
+        if (flag)                       // flag is true when the user doesn't enter a 1 or 2 in userResponse field, notifying user of their invalid input
+            cout << " >>> Invalid response! (Type 1 or 2)\n \n";    
+  
+        cout << " >>> Generate Matrix\n"
+            << " [1] Create custom\n"
+            << " [2] Create random\n"
+            << " Response: ";
+           
+        cin >> userResponse;
+        if (userResponse == "1"){       // user typed 1 to generate custom matrix
+            flow = 1;                   // flow set to 1, value is used in the next step (after this loop is broken)
+            break;                      // break the loop to move onto the next step
+        }
+        else if (userResponse == "2"){  // user typed 2 to generate random matrix
+            flow = 2;                   // flow set to 2, value is used in the next step (after this loop is broken)
+            break;                      // break the loop to move onto the next step
+        }
+        else{                           // if input is invalid, set flag true to notify user of incorrect input
+            flag = true;                // next loop will show flag message saying to type 1 or 2 
+            system("CLS");
+        }  
+
+        if (i >= 11)
+            notifyError("1a");  // if the for loop exceeds 10, terminate program  
+    }
+
+    if (userResponse != "1" && userResponse != "2")
+        notifyError("1a");  // if the user manages to escape the for loop without appropriate input, try to catch them
+    
+    
+    // get desired dimensions from user
+    flag = false;
+    string numcols = "", numrows = "";
+    int ncols, nrows;
+    for (int i = 0; i <= 12; i++){
+        if (flag)
+            cout << " >>>> Invalid input, first enter # of columns, then enter # of rows, # must be greater than 0\n \n";
+        
+        cout << "\nSetting the dimensions, number must be greater than 0\n"
+             << "# of cols: ";
+
+        cin >> numcols;
+
+        cout << "# of rows: ";
+        cin >> numrows;
+
+        if (isNumber(numcols) && isNumber(numrows)){
+            ncols = stoi(numcols), nrows = stoi(numrows);   // convert the inputted strings into integers 
+            if (ncols == 0 && nrows == 0){                  // check if converted inputs are == 0
+                // treat as invalid input (both cols and rows cant be zero)
+                flag = true;
+                system("CLS");
+            }
+            else{                                               // if converted inputs != 0 then proceed with confirming inputs
+                cout << "\n Number of columns = " << numcols    // confirm number of colums
+                    << "\n Number of rows = " << numrows;       // confirm number of rows as well
+                break;                                          // BREAK out of for loop since inputs check out
+            }
+        }
+        else{                   // if string inputs != number then flag and go back to top of loop
+            flag = true;        // the flag will indicate that the previous input was invalid 
+            system("CLS");      // clear the screen to not get things too messy
+        }
+        if (i >= 11)
+            notifyError("1b");
+    }
+    if (!isNumber(numcols) || !isNumber(numrows) || (ncols == 0 && nrows == 0))
+        notifyError("1b");
+
+
+    if (flow == 1){
+        cout << "flow1";
+    }
+    else if (flow == 2){
+        cout << "flow2";
+    }
+    else{
+        notifyError("1c");
+    }
+}
+
+
+// stopped at the num rows and cols, so now move onto phase 3 
+// flow 1 is creating custom matrix 
