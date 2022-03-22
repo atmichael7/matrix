@@ -12,12 +12,15 @@ ERROR CODES
       any input that is not '1' or '2' will not work. 
 
 1b - in the second phase, choosing number of columns and rows, user failed to enter a valid integer that is greater than zero. The user cannot
-      type out the number with chars (Example "two" or "Two"). The number must be greater than zero because there cannot sike u thought
+      type out the number with chars (Example "two" or "Two"). The number must be greater than zero because there cannot be matrices with row or
+      column of size zero.
 
 */
 
 void generateMatrix();  // predefine the function
-
+int matrixCounter = 0;  // when generating multiple matrices, the counter will keep track of which letter to be on (ex: 0=A, 25=Z)
+char matrixEquiv[26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};   // (0=A, 25=Z) limit 26 max matrices
+int matrix[26][25][25]; // 26 rows of matrices, each with max of 25 rows and cols
 
 
 
@@ -36,10 +39,28 @@ void notifyError(string code){          // error notification function
 
 bool isNumber(const string& str)        // function that checks if string is a number (typing "six" doesn't work, but "6" does)
 {
-    for (char const &c : str) {                 
-        if (std::isdigit(c) == 0) return false;
-    }
-    return true;
+    for (char const &c : str) {                    // took this function from a website       
+        if (std::isdigit(c) == 0) return false;    // kinda looks like gibberish since I never use :: for lib functions
+    }                                              // appears to set input c as char from the string that is inputted (str -> char)
+    return true;                                   // then checks w/ std lib isdigit function if c is a digit or not, if not it returns zero thus return false (inputted string isnt a number)
+}                                                  // example of inputted string not being a number (string = "six" != digit) | example of correct string (string = "6" == digit)
+
+// print out matrix, passed the input of the matrix selected to show
+void printMatrix(int currMatrix){       // needs formatting work
+//print out results to check
+    for (int i = 0; i <= 10; i++){      // increment through the rows
+        if (matrix[currMatrix][i][0] == NULL)    // check if the current row is empty (end of matrix)
+            break;  // break if the first entry in the next row is empty (end of matrix)
+        cout << "| ";
+        for (int j = 0; j <= 10; j++){  // increment through each entry in the current row
+            if (matrix[currMatrix][i][j] == NULL){   // check if the current entry is empty, don't print anything if so
+                // if the current [i,j] entry is nothing, dont print (skip)
+            }
+            else
+                cout << matrix[currMatrix][i][j] << " ";
+        }
+        cout << "|" << endl;
+    }    
 }
 
 void generateMatrix(){      // Matrix generation function
@@ -79,19 +100,18 @@ void generateMatrix(){      // Matrix generation function
     
     // get desired dimensions from user
     flag = false;                           // reset the flag variable for reuse
-    string numcols = "", numrows = "";      // string inputs for cols and rows
-    int ncols, nrows;                       // int cols and rows that the string inputs will be converted into
+    string numrows = "", numcols = "";      // string inputs for cols and rows
+    int nrows, ncols;                       // int cols and rows that the string inputs will be converted into
     for (int i = 0; i <= 12; i++){          // loop that will prompt inputs for cols and rows
         if (flag)                           // check flag (user entered incorrect input [either zero or non integer input for either col or row])
             cout << " >>>> Invalid input, first enter # of columns, then enter # of rows, # must be greater than zero\n \n";
-        
+
         cout << "\nSetting the dimensions, number must be greater than 0\n"
-             << "# of cols: ";      // prompt for number of columns
-
-        cin >> numcols;     // user inputs number of columns (will be converted into the ncols int variable)
-
-        cout << "# of rows: ";      // prompt for number of rows
+            << "# of rows: ";      // prompt for number of rows
         cin >> numrows;     // user inputs number of rows (will be converted into the nrows int variable)
+
+        cout << "# of cols: ";      // prompt for number of columns
+        cin >> numcols;     // user inputs number of columns (will be converted into the ncols int variable)
 
         if (isNumber(numcols) && isNumber(numrows)){        // if the inputted strings are numbers, do the next line
             ncols = stoi(numcols), nrows = stoi(numrows);   // convert the inputted strings into integers 
@@ -100,10 +120,8 @@ void generateMatrix(){      // Matrix generation function
                 flag = true;
                 system("CLS");
             }
-            else{                                               // if converted inputs != 0 then proceed with confirming inputs
-                cout << "\n Number of columns = " << numcols    // confirm number of colums
-                    << "\n Number of rows = " << numrows;       // confirm number of rows as well
-                break;                                          // BREAK out of for loop since inputs check out
+            else{          // if converted inputs != 0 then proceed with confirming inputs
+                break;     // BREAK out of for loop since inputs check out
             }
         }
         else{                   // else, the string inputs != number then flag and go back to top of loop
@@ -117,9 +135,26 @@ void generateMatrix(){      // Matrix generation function
         notifyError("1b");                                                          // send error message through the function above
 
 
+    int popMatrix;
     if (flow == 1){
-        cout << "flow1";
+        system("CLS");
+        cout << "\n * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * "
+             << "\n Forming custom matrix: " << matrixEquiv[matrixCounter]
+             << "\n Dimension(" << matrixEquiv[matrixCounter] << "): " << nrows << "x" << ncols;
+        for (int i = 0; i <= (nrows-1); i++){   // populating matrix row by row
+            cout << "\n\n Input all entries in row " << (i+1) << " (spaces between each entry): "; // i+1 since the user will be confused if they see row zero (c++ thing starting from zero)
+            for (int j = 0; j <= (ncols-1); j++){   // populate each entry in the row
+                cin >> popMatrix;
+                matrix[matrixCounter][i][j] = popMatrix;    // in matrix A-Z(matrixCounter), fill row[i](nrows), at entry col[j](ncols)
+            }
+        }
+
+        cout << endl << endl;       // give it some space bro
+        printMatrix(matrixCounter); // print out the newly made matrix (needs work formatting)
     }
+
+
+
     else if (flow == 2){
         cout << "flow2";
     }
@@ -127,7 +162,3 @@ void generateMatrix(){      // Matrix generation function
         notifyError("1c");
     }
 }
-
-
-// stopped at the num rows and cols, so now move onto phase 3 
-// flow 1 is creating custom matrix 
