@@ -3,7 +3,6 @@
 #include <stdlib.h>
 using namespace std; 
 
-void generateMatrix();
 // by Mike B
 /*
 ERROR CODES
@@ -17,22 +16,27 @@ ERROR CODES
 
 */
 
+void generateMatrix();  // predefine the function
+
+
+
+
 int main(){
-    cout << "Matrix Manipulation";
-    generateMatrix();
+    cout << "Matrix Manipulation";      // describe the purpose of the program
+    generateMatrix();                   // first order of business, generate the matrix
 }
 
-void notifyError(string code){
-    cout << "\n \n"
-        << " >>>> Error!" 
-        << "\n >>>> Code: " << code
-        << "\n >>>> Exiting program.";
-    exit(0);
+void notifyError(string code){          // error notification function
+    cout << "\n \n"             
+        << " >>>> Error!"               // announce error
+        << "\n >>>> Code: " << code     // error code, passed by specific parts of functions that failed (better debugging)
+        << "\n >>>> Exiting program.";  // announce exit
+    exit(0);                            // exit code zero
 }
 
-bool isNumber(const string& str)
+bool isNumber(const string& str)        // function that checks if string is a number (typing "six" doesn't work, but "6" does)
 {
-    for (char const &c : str) {
+    for (char const &c : str) {                 
         if (std::isdigit(c) == 0) return false;
     }
     return true;
@@ -74,25 +78,25 @@ void generateMatrix(){      // Matrix generation function
     
     
     // get desired dimensions from user
-    flag = false;
-    string numcols = "", numrows = "";
-    int ncols, nrows;
-    for (int i = 0; i <= 12; i++){
-        if (flag)
-            cout << " >>>> Invalid input, first enter # of columns, then enter # of rows, # must be greater than 0\n \n";
+    flag = false;                           // reset the flag variable for reuse
+    string numcols = "", numrows = "";      // string inputs for cols and rows
+    int ncols, nrows;                       // int cols and rows that the string inputs will be converted into
+    for (int i = 0; i <= 12; i++){          // loop that will prompt inputs for cols and rows
+        if (flag)                           // check flag (user entered incorrect input [either zero or non integer input for either col or row])
+            cout << " >>>> Invalid input, first enter # of columns, then enter # of rows, # must be greater than zero\n \n";
         
         cout << "\nSetting the dimensions, number must be greater than 0\n"
-             << "# of cols: ";
+             << "# of cols: ";      // prompt for number of columns
 
-        cin >> numcols;
+        cin >> numcols;     // user inputs number of columns (will be converted into the ncols int variable)
 
-        cout << "# of rows: ";
-        cin >> numrows;
+        cout << "# of rows: ";      // prompt for number of rows
+        cin >> numrows;     // user inputs number of rows (will be converted into the nrows int variable)
 
-        if (isNumber(numcols) && isNumber(numrows)){
+        if (isNumber(numcols) && isNumber(numrows)){        // if the inputted strings are numbers, do the next line
             ncols = stoi(numcols), nrows = stoi(numrows);   // convert the inputted strings into integers 
-            if (ncols == 0 && nrows == 0){                  // check if converted inputs are == 0
-                // treat as invalid input (both cols and rows cant be zero)
+            if (ncols == 0 || nrows == 0){                  // check if either converted inputs are == 0
+                // treat as invalid input (neither cols or rows can be zero)
                 flag = true;
                 system("CLS");
             }
@@ -102,15 +106,15 @@ void generateMatrix(){      // Matrix generation function
                 break;                                          // BREAK out of for loop since inputs check out
             }
         }
-        else{                   // if string inputs != number then flag and go back to top of loop
+        else{                   // else, the string inputs != number then flag and go back to top of loop
             flag = true;        // the flag will indicate that the previous input was invalid 
             system("CLS");      // clear the screen to not get things too messy
         }
-        if (i >= 11)
-            notifyError("1b");
+        if (i >= 11)            // if the user manages to not enter valid numbers for cols and rows then notify of error
+            notifyError("1b");  // error 1b, described in error codes
     }
-    if (!isNumber(numcols) || !isNumber(numrows) || (ncols == 0 && nrows == 0))
-        notifyError("1b");
+    if (!isNumber(numcols) || !isNumber(numrows) || (ncols == 0 && nrows == 0))     // try to catch any exceptions where user entered valid input, but managed to proceed past function
+        notifyError("1b");                                                          // send error message through the function above
 
 
     if (flow == 1){
