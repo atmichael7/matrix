@@ -18,6 +18,7 @@ ERROR CODES
 */
 
 void generateMatrix();  // predefine the function
+void printMatrix(int currMatrix); 
 int matrixCounter = 0;  // when generating multiple matrices, the counter will keep track of which letter to be on (ex: 0=A, 25=Z)
 char matrixEquiv[26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};   // (0=A, 25=Z) limit 26 max matrices
 int matrix[26][25][25]; // 26 rows of matrices, each with max of 25 rows and cols
@@ -25,8 +26,9 @@ int matrix[26][25][25]; // 26 rows of matrices, each with max of 25 rows and col
 
 
 int main(){
-    cout << "Matrix Manipulation";      // describe the purpose of the program
-    generateMatrix();                   // first order of business, generate the matrix
+    cout << "Matrix Manipulation";      // describe the purpose of the program 
+    generateMatrix();                 // first order of business, generate the matrix
+    
 }
 
 void notifyError(string code){          // error notification function
@@ -153,12 +155,12 @@ void generateMatrix(){      // Matrix generation function
         printMatrix(matrixCounter); // print out the newly made matrix (needs work formatting)
     }
 
-
-
     else if (flow == 2){
         cout << "flow2";
     }
     else{
         notifyError("1c");
     }
+
+    matrixCounter++;    // increment counter for next matrix to be made on the next value
 }
