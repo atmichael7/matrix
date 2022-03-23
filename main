@@ -19,16 +19,57 @@ ERROR CODES
 
 void generateMatrix();  // predefine the function
 void printMatrix(int currMatrix); 
+void deleteMatrix();
 int matrixCounter = 0;  // when generating multiple matrices, the counter will keep track of which letter to be on (ex: 0=A, 25=Z)
 char matrixEquiv[26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};   // (0=A, 25=Z) limit 26 max matrices
 int matrix[26][25][25]; // 26 rows of matrices, each with max of 25 rows and cols
+bool menuLoop = true, menuFlag = false;
+string menuAnswer;
 
 
 
 int main(){
-    cout << "Matrix Manipulation";      // describe the purpose of the program 
-    generateMatrix();                 // first order of business, generate the matrix
-    
+    while (menuLoop){
+        system("CLS");  // clear screen
+        if (menuFlag){  // if the user inputted an incorrect input
+            cout << ">>>> Invalid input\n"; // message saying that their previous input was invalid
+        }
+        cout << "  - MAIN MENU - ";             // communicate the current menu and options
+        cout << "\n [1] Create matrix "         // create new matrix
+             << "\n [2] Matrix operations"    // add/sub/mult/div/transpose/determinant/inverse
+             << "\n [3] Display matrices\n"     // display already created matrices, add extra line between this and next 
+             << "\n [4] Delete matrix"          // delete already made matrix
+             << "\n [5] Exit";                  // exit the program    
+
+        cin >> menuAnswer;
+        if (menuAnswer == "1"){
+            generateMatrix();
+            menuFlag = false;                                   // set flag to false as to reduce confusion if they entered incorrect input before they got to this menu
+        } 
+        else if (menuAnswer == "2"){
+            // ah yes the meat and bone of this
+            menuFlag = false;                                   // set flag to false as to reduce confusion if they entered incorrect input before they got to this menu
+        }  
+        else if (menuAnswer == "3"){                            // == 3 is displaying all matrices that the user has created
+            string proceed;                                     // str proceed is used after all matrices are printed so user can advance at will
+            for (int i = 0; i <= (matrixCounter - 1); i++){     // loop that goes through every matrix created (determined by matrixCounter variable)[incremented in generateMatrix function]
+                printMatrix(i);                                 // printMatrix(i) uses the print function of the current matrix i, i can range from 0 to 25 (or A to Z for Equiv matrix)
+            }
+            cout << "\n Type anything to continue: ";       // prompt user to enter anything to proceed
+            cin >> proceed;                                 // this allows the user to inspect the printed matrices to ensure its to their liking
+            menuFlag = false;                               // set flag to false as to reduce confusion if they entered incorrect input before they got to this menu
+        }
+        else if (menuAnswer == "4"){            // == 4 is the delete matrix option
+            deleteMatrix();                     // calls the deleteMatrix function (refer to that function)
+            menuFlag = false;                   // set flag to false as to reduce confusion if they entered incorrect input before they got to this menu
+        }
+        else if (menuAnswer == "5"){    // == 5 is the exit option
+            exit(0);                    // if user has hands on keyboard, they can simply press 5 and enter to quit 
+        }
+        else{                   // if the user input is invalid (Not 1,2,3,4,5) then flag 
+            menuFlag = true;    // flag will notify user that their last input was invalid on the next loop
+        }     
+    }
 }
 
 void notifyError(string code){          // error notification function
@@ -50,6 +91,7 @@ bool isNumber(const string& str)        // function that checks if string is a n
 // print out matrix, passed the input of the matrix selected to show
 void printMatrix(int currMatrix){       // needs formatting work
 //print out results to check
+    cout << "Matrix: " << matrixEquiv[currMatrix] << endl;  // show user what matrix is being printed (EX "Matrix: A")
     for (int i = 0; i <= 10; i++){      // increment through the rows
         if (matrix[currMatrix][i][0] == NULL)    // check if the current row is empty (end of matrix)
             break;  // break if the first entry in the next row is empty (end of matrix)
@@ -59,7 +101,7 @@ void printMatrix(int currMatrix){       // needs formatting work
                 // if the current [i,j] entry is nothing, dont print (skip)
             }
             else
-                cout << matrix[currMatrix][i][j] << " ";
+                cout << matrix[currMatrix][i][j] << " ";    // otherwise print the entry w/ a lil formatting space
         }
         cout << "|" << endl;
     }    
@@ -136,7 +178,6 @@ void generateMatrix(){      // Matrix generation function
     if (!isNumber(numcols) || !isNumber(numrows) || (ncols == 0 && nrows == 0))     // try to catch any exceptions where user entered valid input, but managed to proceed past function
         notifyError("1b");                                                          // send error message through the function above
 
-
     int popMatrix;
     if (flow == 1){
         system("CLS");
@@ -155,12 +196,85 @@ void generateMatrix(){      // Matrix generation function
         printMatrix(matrixCounter); // print out the newly made matrix (needs work formatting)
     }
 
+    // if flow == 2 then the user wants to create a random generated matrix
     else if (flow == 2){
         cout << "flow2";
     }
+    // otherwise if flow != 1 && !=2 then they have made a mistake
     else{
         notifyError("1c");
     }
 
     matrixCounter++;    // increment counter for next matrix to be made on the next value
 }
+
+void displayInUse(){    // displays matrix letters in use A through Z
+    system("CLS");
+    cout << " Current matrices: ";
+    for (int i = 0; i <= (matrixCounter - 1); i++){   // simple implementation, but if user used all 26 and deleted some there would be issues
+        cout << matrixEquiv[i] << ", ";         // print the current matrixEquiv value of the ith iteration (so A through Z depending on how many are in use [determined by counter])
+    }
+    cout << endl;
+}
+
+void deleteMatrix(){   
+    char displayInput, confirm;
+    int track = 0, track2 = 0;
+
+    displayInUse();
+    cout << "\n Input which one to be deleted: ";
+    cin >> displayInput;
+
+    cout << endl;
+    /*  1. In the first loop, it will check if the input == matrixEquiv[track]
+            that is, if user input is B, then when track = 1, matrixEquiv[i or 1] == B since matrix Equiv is the set of chars A to Z
+            where A is in index 0 of the matrix Equiv set, and B is in index 1 of the matrix Equiv set. 
+            Thus once it hits, it will proceed to the deletion portion of the following for loops
+    */
+    for (; track <= 25; track++){                   // since track was created above for tracking purposes, the first field is left blank in the for loop 
+        if (displayInput == matrixEquiv[track]){    // if the input == the current entry in matrix equiv (which is a set of A to Z)
+            track2 = track;
+            printMatrix(track);                     // |__ print out the matrix corresponding to the integer track, which there are 26 of A to Z, 0 to 25
+        }
+    }
+    cout << "\n Delete " << displayInput << "? (y/n): ";
+    
+    cin >> confirm;
+    if (confirm == 'y'){
+        /*  Need to do nested loops for this deletion
+        2. In the first loop, it will count from 0 to 24 since the matrix has maximum size of 25 entries (0 to 24) for the rows
+            and in this loop (j), it will be responsible for holding the position of the current row; which there are 25 of.
+            Each row has 25 entries (0 to 24) as well, so this will only count up by one and let the next loop handle each entry in 
+            the jth row. Thus leading us to the next loop.
+
+        3. In the second loop, it will count from 0 to 24 since the matrix has maximum size of 25. Since the last loop is handling 
+            the rows, this one will focus on each entry in the selected (j) row. So this loop handles iterating through each entry (k)
+            in row (j). It will not check if the current entry is NULL or not, we do not care since we want this whole matrix (track) to be
+            wiped clean of all entries, so we will wipe it all clean.
+            Thus this last loop will delete each entry (k) in the row (j). 
+
+        */
+       cout << "uhh ok";
+        for (int j = 0; j <= 24; j++){
+            for (int k = 0; k <= 24; k++){
+                matrix[track2][j][k] = 0;     // set the current k entry in row k, in the determined i matrix
+            }
+        }
+        cout << "\n Deleted matrix: " << matrixEquiv[track2];
+        Sleep(2000);          
+    }
+}
+
+
+/*
+MAJOR ISSUE 
+if the entry begins with zero it will not print it 
+same for last entry that is zero
+
+solution?
+when creating a new matrix, create new temp matrix temp[row][cols] and set it equal to idk
+
+when creating a new matrix, every other entry that is not within the rows and colums will be set to a specific number like 839 rather than remaining zero
+    this solution wastes more space and memory buuuuut idk any other implementation in my head and its 2 AM soooo this will do for brainstorming rn
+
+*/
